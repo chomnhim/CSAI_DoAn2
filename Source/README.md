@@ -543,12 +543,6 @@ Kiểm tra ràng buộc sớm để loại bỏ nhánh không khả thi
 | 23122051 | Đoàn Quang Thắng | 23122051@student.hcmus.edu.vn | Backtracking |
 | 23122054 | Kpuih Thuing | 23122054@student.hcmus.edu.vn | Testing & Report |
 
-## 📞 Liên Hệ
-
-Nếu có thắc mắc, vui lòng liên hệ:
-- Email: [email của nhóm]
-- GitHub: [link repository nếu có]
-
 ## 📄 License
 
 Đồ án môn học CSC14003 - Introduction to Artificial Intelligence
