@@ -148,7 +148,7 @@ class PySATSolver:
         result = self.cnf_gen.generate_cnf()
         if result is None:
             solve_time = time.perf_counter() - start_time
-            print(f"✗ UNSAT (Local Conflict Detected) ({solve_time:.4f}s)")
+            print(f" UNSAT (Local Conflict Detected) ({solve_time:.4f}s)")
             self.diagnose_failure()
             return None, solve_time
 
@@ -160,11 +160,11 @@ class PySATSolver:
         for c in clauses: solver.add_clause(c)
             
         if solver.solve():
-            print(f"✓ SAT Found ({time.perf_counter() - start_time:.4f}s)")
+            print(f" SAT Found ({time.perf_counter() - start_time:.4f}s)")
             return self._extract_solution(solver.get_model(), variables), time.perf_counter() - start_time
         else:
             solve_time = time.perf_counter() - start_time
-            print(f"✗ UNSAT ({solve_time:.4f}s)")
+            print(f" UNSAT ({solve_time:.4f}s)")
             self.diagnose_failure()
             return None, solve_time
 
@@ -189,7 +189,7 @@ class PySATSolver:
 
         total_bridges = sum(val for r, c, val in islands)
         if total_bridges % 2 != 0:
-            print(f"➤ LỖI TOÁN HỌC: Tổng giá trị các đảo là {total_bridges} (Số lẻ).")
+            print(f" LỖI TOÁN HỌC: Tổng giá trị các đảo là {total_bridges} (Số lẻ).")
             print("  (Tổng số cầu x 2 luôn phải là số chẵn -> Không thể giải được).")
             found_reason = True
 
@@ -199,13 +199,13 @@ class PySATSolver:
             max_possible = num_neighbors * 2
             
             if val > max_possible:
-                print(f"➤ LỖI CỤC BỘ tại Đảo ({r},{c}) giá trị {val}:")
+                print(f" LỖI CỤC BỘ tại Đảo ({r},{c}) giá trị {val}:")
                 print(f"  - Chỉ có {num_neighbors} láng giềng.")
                 print(f"  - Tối đa chỉ nối được {max_possible} cầu (thiếu {val - max_possible}).")
                 found_reason = True
             
             if num_neighbors == 0:
-                print(f"➤ LỖI CÔ LẬP tại Đảo ({r},{c}): Cần {val} cầu nhưng không có láng giềng nào.")
+                print(f" LỖI CÔ LẬP tại Đảo ({r},{c}): Cần {val} cầu nhưng không có láng giềng nào.")
                 found_reason = True
 
         for r, c, val in islands:
@@ -218,13 +218,13 @@ class PySATSolver:
                 max_neighbors_can_take += max_contribution
             
             if val > max_neighbors_can_take:
-                print(f"➤ LỖI LÁNG GIỀNG tại Đảo ({r},{c}) giá trị {val}:")
+                print(f" LỖI LÁNG GIỀNG tại Đảo ({r},{c}) giá trị {val}:")
                 print(f"  - Tổng sức chứa của các láng giềng chỉ là {max_neighbors_can_take}.")
                 print(f"  - Không đủ chỗ để nối {val} cầu.")
                 found_reason = True
 
         if not found_reason:
-            print("➤ LỖI CẤU TRÚC PHỨC TẠP (Global Conflict):")
+            print(" LỖI CẤU TRÚC PHỨC TẠP (Global Conflict):")
             print("  Các ràng buộc cục bộ đều thỏa mãn, nhưng mâu thuẫn xảy ra ở cấu trúc toàn cục.")
             print("  (Ví dụ: Cầu bắt buộc phải cắt nhau mới nối đủ số, hoặc đồ thị bị chia cắt).")
         

@@ -6,15 +6,6 @@ from helper_01 import HashiwokakeroGame
 sys.setrecursionlimit(10000)
 
 class BacktrackingSolver:
-    """
-    Optimized Backtracking with:
-    - Forward Checking
-    - MRV (Most Constrained Variable)
-    - LCV (Least Constraining Value)
-    - Early Pruning
-    - Early UNSAT Detection
-    """
-    
     def __init__(self, game: HashiwokakeroGame):
         self.game = game
         self.islands_map = {(r,c): v for r,c,v in game.islands}
@@ -40,19 +31,18 @@ class BacktrackingSolver:
         
         elapsed = time.perf_counter() - start
         if result:
-            print(f"✓ Solution found! Nodes: {self.nodes_explored:,}")
+            print(f" Solution found! Nodes: {self.nodes_explored:,}")
             return result, elapsed
         else:
             if self.unsat_detected:
-                print(f"✗ No solution (UNSAT detected). Nodes: {self.nodes_explored:,}")
+                print(f" No solution (UNSAT detected). Nodes: {self.nodes_explored:,}")
             else:
-                print(f"✗ No solution. Nodes: {self.nodes_explored:,}")
+                print(f" No solution. Nodes: {self.nodes_explored:,}")
             return None, elapsed
 
     def _backtrack(self, solution: Dict, depth: int) -> Dict:
         self.nodes_explored += 1
         
-        # ✅ Early UNSAT Detection
         if self.nodes_explored % 5000 == 0:
             if self._detect_unsat_early(solution):
                 if not self.unsat_detected:
@@ -137,14 +127,12 @@ class BacktrackingSolver:
         return None
 
     def _is_complete(self, solution):
-        """Check if all islands have required bridges"""
         for (r,c), val in self.islands_map.items():
             if self._current_bridges(r, c, solution) != val:
                 return False
         return True
 
     def _select_mrv_island(self, solution):
-        """Select most constrained island"""
         best = None
         best_score = -1
         
@@ -179,7 +167,6 @@ class BacktrackingSolver:
         return best
 
     def _order_neighbors_lcv(self, r, c, solution):
-        """Order neighbors by LCV"""
         neighbors = self.neighbors_map[(r,c)]
         scores = []
         
@@ -202,7 +189,6 @@ class BacktrackingSolver:
         return [(nr, nc) for _, nr, nc in scores]
 
     def _is_consistent(self, solution):
-        """Forward checking"""
         for (r,c), val in self.islands_map.items():
             curr = self._current_bridges(r, c, solution)
             if curr > val:
@@ -226,7 +212,6 @@ class BacktrackingSolver:
         return True
 
     def _detect_unsat_early(self, solution):
-        """Early UNSAT detection"""
         # Check 1: Impossible capacity
         for (r,c), val in self.islands_map.items():
             curr = self._current_bridges(r, c, solution)
@@ -267,7 +252,6 @@ class BacktrackingSolver:
         return False
 
     def _count_unconnected_islands(self, solution):
-        """Count islands with no bridges"""
         count = 0
         for (r,c) in self.islands_map.keys():
             if self._current_bridges(r, c, solution) == 0:
@@ -302,7 +286,6 @@ class BacktrackingSolver:
         return False
 
     def _is_connected(self, solution):
-        """Check connectivity via DFS"""
         if not self.game.islands:
             return True
         

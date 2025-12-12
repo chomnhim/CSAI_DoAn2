@@ -6,7 +6,7 @@ from helper_01 import HashiwokakeroGame
 
 class AStarNode:
     def __init__(self, state: Dict, g: float, h: float):
-        self.state = state  # Map {(r1,c1,r2,c2): count}
+        self.state = state 
         self.g = g
         self.h = h
         self.f = g + h
@@ -35,12 +35,11 @@ class AStarSolver:
             node = heapq.heappop(pq)
             self.nodes_explored += 1
             
-            # ✅ Early UNSAT Detection
             if self.nodes_explored % 5000 == 0:
                 if self._detect_unsat_early(node.state):
                     elapsed = time.perf_counter() - start
-                    print(f"  🔍 Detected UNSAT early at {self.nodes_explored:,} nodes")
-                    print(f"✗ No solution (UNSAT detected). Nodes: {self.nodes_explored:,}")
+                    print(f"   Detected UNSAT early at {self.nodes_explored:,} nodes")
+                    print(f" No solution (UNSAT detected). Nodes: {self.nodes_explored:,}")
                     return None, elapsed
             
             # Progress
@@ -102,18 +101,16 @@ class AStarSolver:
                     heapq.heappush(pq, AStarNode(new_state, node.g + 1, h))
         
         elapsed = time.perf_counter() - start
-        print(f"✗ No solution. Nodes: {self.nodes_explored:,}")
+        print(f" No solution. Nodes: {self.nodes_explored:,}")
         return None, elapsed
 
     def _is_complete(self, state):
-        """Check if all islands have required bridges"""
         for (r,c), val in self.islands_map.items():
             if self._current_bridges(r, c, state) != val:
                 return False
         return True
 
     def _is_valid_partial(self, state):
-        """Early pruning - check if state can reach goal"""
         for (r,c), val in self.islands_map.items():
             curr = self._current_bridges(r, c, state)
             if curr > val:
@@ -138,7 +135,6 @@ class AStarSolver:
         return True
 
     def _select_island(self, state):
-        """Select most constrained island (MRV)"""
         best = None
         best_score = -1
         
@@ -149,7 +145,6 @@ class AStarSolver:
             if needed <= 0:
                 continue
             
-            # Count available options
             available = 0
             for nr, nc in self.neighbors_map[(r,c)]:
                 key = tuple(sorted(((r,c), (nr,nc))))
@@ -181,13 +176,6 @@ class AStarSolver:
         return count
 
     def _heuristic(self, state):
-        """
-        Improved Admissible Heuristic:
-        1. Base: remaining bridges / 2
-        2. Component penalty
-        3. Isolated islands penalty
-        4. Hard islands penalty
-        """
         total_deficit = 0
         isolated_count = 0
         
@@ -251,7 +239,6 @@ class AStarSolver:
         return h
 
     def _count_components(self, state):
-        """Count connected components"""
         if not state:
             return len(self.islands_map)
         
@@ -283,7 +270,6 @@ class AStarSolver:
         return components
 
     def _detect_unsat_early(self, state):
-        """Early UNSAT detection"""
         # Check 1: Impossible capacity
         for (r,c), val in self.islands_map.items():
             curr = self._current_bridges(r, c, state)
@@ -326,7 +312,6 @@ class AStarSolver:
         return False
 
     def _count_unconnected_islands(self, state):
-        """Count islands with no bridges"""
         count = 0
         for (r,c) in self.islands_map.keys():
             if self._current_bridges(r, c, state) == 0:
@@ -349,7 +334,6 @@ class AStarSolver:
         return False
 
     def _is_connected(self, state):
-        """Check if all islands connected via DFS"""
         if not self.game.islands:
             return True
         

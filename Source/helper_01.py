@@ -13,14 +13,7 @@ DIRECTIONS = [(-1, 0), (1, 0), (0, -1), (0, 1)]
 
 
 class HashiwokakeroGame:
-    """
-    Class đại diện cho một puzzle Hashiwokakero
-    """
-    
     def __init__(self, filename=None, grid=None):
-        """
-        Khởi tạo game từ file hoặc từ grid cho trước
-        """
         if filename:
             self.grid = self.read_input(filename)
         elif grid is not None:
@@ -33,9 +26,6 @@ class HashiwokakeroGame:
         self.bridges = {}
         
     def read_input(self, filename: str) -> np.ndarray:
-        """
-        Đọc file input
-        """
         with open(filename, 'r') as f:
             lines = f.readlines()
         
@@ -49,9 +39,6 @@ class HashiwokakeroGame:
         return np.array(grid)
     
     def find_islands(self) -> List[Tuple[int, int, int]]:
-        """
-        Tìm tất cả các đảo
-        """
         islands = []
         for i in range(self.rows):
             for j in range(self.cols):
@@ -60,9 +47,6 @@ class HashiwokakeroGame:
         return islands
     
     def get_neighbors(self, row: int, col: int) -> List[Tuple[int, int]]:
-        """
-        Tìm các đảo láng giềng
-        """
         neighbors = []
         
         for dr, dc in DIRECTIONS:
@@ -79,18 +63,12 @@ class HashiwokakeroGame:
     
     def is_valid_bridge(self, i1: int, j1: int, i2: int, j2: int, 
                        current_state: dict) -> bool:
-        """
-        Kiểm tra cầu hợp lệ
-        """
         for (r1, c1, r2, c2), _ in current_state.items():
             if self._bridges_cross((i1, j1, i2, j2), (r1, c1, r2, c2)):
                 return False
         return True
     
     def _bridges_cross(self, bridge1: tuple, bridge2: tuple) -> bool:
-        """
-        Kiểm tra 2 cầu có cắt nhau
-        """
         i1a, j1a, i2a, j2a = bridge1
         i1b, j1b, i2b, j2b = bridge2
         
@@ -107,9 +85,6 @@ class HashiwokakeroGame:
         return False
     
     def display(self, solution=None):
-        """
-        Hiển thị puzzle hoặc solution
-        """
         if solution is None:
             print("Grid:")
             print(self.grid)
@@ -117,9 +92,6 @@ class HashiwokakeroGame:
             self.display_solution(solution)
     
     def display_solution(self, solution: dict) -> List[List[str]]:
-        """
-        Hiển thị solution
-        """
         result = [[BRIDGE_SYMBOLS['empty'] for _ in range(self.cols)] 
                   for _ in range(self.rows)]
         
@@ -147,9 +119,6 @@ class HashiwokakeroGame:
         return result
     
     def save_solution(self, solution: dict, filename: str):
-        """
-        Lưu solution ra file
-        """
         result = [[BRIDGE_SYMBOLS['empty'] for _ in range(self.cols)] 
                   for _ in range(self.rows)]
         
@@ -176,9 +145,6 @@ class HashiwokakeroGame:
                 f.write('[' + ', '.join(f'"{x}"' for x in row) + ']\n')
     
     def validate_solution(self, solution: dict) -> Tuple[bool, List[str]]:
-        """
-        Kiểm tra solution hợp lệ
-        """
         errors = []
         
         bridges_count = {}

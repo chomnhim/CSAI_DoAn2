@@ -11,11 +11,6 @@ from helper_01 import HashiwokakeroGame
 
 
 class BruteForceSolver:
-    """
-    Brute Force: Thử TẤT CẢ các cách đặt cầu có thể
-    Chỉ dùng cho puzzle nhỏ (≤8 đảo)
-    """
-    
     def __init__(self, game: HashiwokakeroGame):
         self.game = game
         self.nodes_explored = 0
@@ -25,12 +20,12 @@ class BruteForceSolver:
         for r, c, _ in game.islands:
             neighbors = game.get_neighbors(r, c)
             for nr, nc in neighbors:
-                if (r, c) < (nr, nc):  # Tránh trùng lặp
+                if (r, c) < (nr, nc):  
                     self.all_possible_connections.append((r, c, nr, nc))
         
         self.num_connections = len(self.all_possible_connections)
         
-        # Tính số combinations (mỗi kết nối có 3 khả năng: 0, 1, 2 cầu)
+        # Tính số combinations 
         self.total_combinations = 3 ** self.num_connections
         
         print(f"Brute Force Setup:")
@@ -38,21 +33,12 @@ class BruteForceSolver:
         print(f"  - Tổng combinations: {self.total_combinations:,}")
         
         if self.total_combinations > 10_000_000:
-            print(f"  ⚠️  CẢNH BÁO: Quá nhiều combinations!")
-            print(f"  ⚠️  Thời gian ước tính: rất lâu...")
+            print(f"    CẢNH BÁO: Quá nhiều combinations!")
+            print(f"    Thời gian ước tính: rất lâu...")
     
     def solve(self) -> Tuple[Dict, float]:
-        """
-        Giải puzzle bằng Brute Force
-        
-        Returns:
-            (solution, time_taken)
-        """
         print("\nSolving with Brute Force...")
         start = time.perf_counter()
-        
-        # Thử TẤT CẢ các combinations
-        # Mỗi connection có 3 giá trị: 0, 1, 2 cầu
         for combination in product([0, 1, 2], repeat=self.num_connections):
             self.nodes_explored += 1
             
@@ -77,9 +63,9 @@ class BruteForceSolver:
                 pct = self.nodes_explored / self.total_combinations * 100
                 print(f"  Progress: {self.nodes_explored:,}/{self.total_combinations:,} ({pct:.2f}%) - {elapsed:.1f}s")
             
-            # Safety limit (tránh chạy quá lâu)
+            # Safety limit 
             if self.nodes_explored > 50_000_000:
-                print("  ⚠️  Exceeded safety limit, stopping...")
+                print("    Exceeded safety limit, stopping...")
                 break
         
         elapsed = time.perf_counter() - start
@@ -88,14 +74,6 @@ class BruteForceSolver:
         return None, elapsed
     
     def _is_valid_solution(self, solution: Dict) -> bool:
-        """
-        Kiểm tra solution có hợp lệ không
-        
-        Checks:
-        1. Mỗi đảo có đúng số cầu
-        2. Không có cầu cắt nhau
-        3. Tất cả đảo connected (1 connected component)
-        """
         # Check 1: Số cầu mỗi đảo
         bridges_count = {}
         for r, c, val in self.game.islands:
@@ -123,28 +101,23 @@ class BruteForceSolver:
         return True
     
     def _bridges_cross(self, bridge1: tuple, bridge2: tuple) -> bool:
-        """Kiểm tra 2 cầu có cắt nhau không"""
         r1a, c1a, r2a, c2a = bridge1
         r1b, c1b, r2b, c2b = bridge2
         
-        # Ngang vs Dọc
         is_h1 = (r1a == r2a)
         is_h2 = (r1b == r2b)
         
         if is_h1 == is_h2:
             return False
         
-        if is_h1:  # Bridge1 ngang, Bridge2 dọc
+        if is_h1:  
             return (min(c1a, c2a) < c1b < max(c1a, c2a) and
                     min(r1b, r2b) < r1a < max(r1b, r2b))
-        else:  # Bridge1 dọc, Bridge2 ngang
+        else:  
             return (min(c1b, c2b) < c1a < max(c1b, c2b) and
                     min(r1a, r2a) < r1b < max(r1a, r2a))
     
     def _is_connected(self, solution: Dict) -> bool:
-        """
-        Kiểm tra tất cả đảo có connected không (DFS)
-        """
         if not self.game.islands:
             return True
         
@@ -176,11 +149,6 @@ class BruteForceSolver:
 
 
 class OptimizedBruteForceSolver:
-    """
-    Brute Force với Early Pruning
-    Dừng sớm khi phát hiện vi phạm constraint
-    """
-    
     def __init__(self, game: HashiwokakeroGame):
         self.game = game
         self.nodes_explored = 0
@@ -194,7 +162,6 @@ class OptimizedBruteForceSolver:
                     self.connections.append((r, c, nr, nc))
     
     def solve(self) -> Tuple[Dict, float]:
-        """Giải với recursive + pruning"""
         print("\nSolving with Optimized Brute Force...")
         start = time.perf_counter()
         
@@ -203,23 +170,22 @@ class OptimizedBruteForceSolver:
         
         elapsed = time.perf_counter() - start
         if result:
-            print(f"✓ Found solution!")
+            print(f" Found solution!")
             print(f"  - Nodes explored: {self.nodes_explored:,}")
             return result, elapsed
         else:
-            print(f"✗ No solution")
+            print(f" No solution")
             print(f"  - Nodes explored: {self.nodes_explored:,}")
             return None, elapsed
     
     def _backtrack_with_pruning(self, idx: int, solution: Dict) -> Dict:
-        """Recursive backtracking với early pruning"""
         self.nodes_explored += 1
         
         # Limit
         if self.nodes_explored > 10_000_000:
             return None
         
-        # Early pruning: Kiểm tra có đảo nào bị quá tải không
+        # Early pruning
         if not self._is_valid_partial(solution):
             return None
         
@@ -259,7 +225,6 @@ class OptimizedBruteForceSolver:
         return None
     
     def _is_valid_partial(self, solution: Dict) -> bool:
-        """Kiểm tra có đảo nào bị quá tải không"""
         bridges_count = {}
         for r, c, val in self.game.islands:
             bridges_count[(r, c)] = 0
@@ -275,7 +240,6 @@ class OptimizedBruteForceSolver:
         return True
     
     def _is_complete_solution(self, solution: Dict) -> bool:
-        """Kiểm tra solution đầy đủ"""
         # Check số cầu
         bridges_count = {}
         for r, c, val in self.game.islands:
@@ -293,7 +257,6 @@ class OptimizedBruteForceSolver:
         return self._is_connected(solution)
     
     def _would_cross(self, new_conn: tuple, solution: Dict) -> bool:
-        """Kiểm tra connection mới có cross với cầu đã có không"""
         r1a, c1a, r2a, c2a = new_conn
         is_h1 = (r1a == r2a)
         
@@ -315,7 +278,6 @@ class OptimizedBruteForceSolver:
         return False
     
     def _is_connected(self, solution: Dict) -> bool:
-        """Check connectivity"""
         if not self.game.islands:
             return True
         

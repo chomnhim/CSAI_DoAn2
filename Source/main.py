@@ -10,7 +10,6 @@ from helper_02 import PySATSolver
 
 
 def solve_single(input_file: str, solver_type: str, output_file: str = None):
-    """Giải một puzzle với solver được chỉ định"""
     print("="*80)
     print(f"SOLVING: {input_file}")
     print(f"SOLVER: {solver_type.upper()}")
@@ -23,7 +22,7 @@ def solve_single(input_file: str, solver_type: str, output_file: str = None):
         print(f"Islands: {len(game.islands)}")
         print()
     except Exception as e:
-        print(f"✗ Lỗi khi đọc file: {e}")
+        print(f" Lỗi khi đọc file: {e}")
         return None
     
     # Xác định output file
@@ -80,19 +79,19 @@ def solve_single(input_file: str, solver_type: str, output_file: str = None):
         
         is_valid, errors = game.validate_solution(solution)
         if is_valid:
-            print("\n✓ Solution hợp lệ!")
+            print("\n Solution hợp lệ!")
         else:
-            print("\n✗ Solution không hợp lệ:")
+            print("\n Solution không hợp lệ:")
             for error in errors:
                 print(f"  - {error}")
         
         try:
             game.save_solution(solution, output_file)
-            print(f"\n✓ Đã lưu solution vào: {output_file}")
+            print(f"\n Đã lưu solution vào: {output_file}")
         except Exception as e:
-            print(f"\n✗ Lỗi khi lưu output: {e}")
+            print(f"\n Lỗi khi lưu output: {e}")
         
-        print(f"\n⏱ Thời gian: {time_taken:.4f}s")
+        print(f"\n Thời gian: {time_taken:.4f}s")
         if hasattr(solver, 'nodes_explored'):
             print(f"🔍 Nodes explored: {solver.nodes_explored:,}")
         
@@ -105,15 +104,14 @@ def solve_single(input_file: str, solver_type: str, output_file: str = None):
             with open(output_file, 'w', encoding='utf-8') as f:
                 f.write("NO SOLUTION\n")
                 f.write("(Map này không có lời giải)")
-            print(f"\n✓ Đã lưu thông báo 'NO SOLUTION' vào: {output_file}")
+            print(f"\n Đã lưu thông báo 'NO SOLUTION' vào: {output_file}")
         except:
             pass
-        print(f"\n⏱ Thời gian kiểm tra: {time_taken:.4f}s")
+        print(f"\n Thời gian kiểm tra: {time_taken:.4f}s")
         return None
 
 
 def benchmark_all():
-    """Chạy benchmark trên TẤT CẢ test cases (FIXED - NO DUPLICATES)"""
     print("="*80)
     print("BENCHMARK - CHẠY TẤT CẢ TEST CASES")
     print("="*80)
@@ -121,7 +119,7 @@ def benchmark_all():
     # TÌM FILE MỘT LẦN DUY NHẤT
     files = find_input_files()
     if not files:
-        print("✗ Không tìm thấy file input nào!")
+        print(" Không tìm thấy file input nào!")
         return
 
     print(f"Tìm thấy {len(files)} test cases.\n")
@@ -172,7 +170,7 @@ def benchmark_all():
                 print(f"✓ Đã lưu: {output_file}")
             else:
                 result['valid'] = False
-                print("➤ KHÔNG CÓ LỜI GIẢI.")
+                print(" KHÔNG CÓ LỜI GIẢI.")
                 with open(output_file, 'w', encoding='utf-8') as f:
                     f.write("NO SOLUTION\n")
                     f.write("(Map này không có lời giải)")
@@ -180,7 +178,7 @@ def benchmark_all():
             results.append(result)
             
         except Exception as e:
-            print(f"✗ Lỗi: {e}")
+            print(f" Lỗi: {e}")
             import traceback
             traceback.print_exc()
             
@@ -225,7 +223,6 @@ def benchmark_all():
 
 
 def compare_solvers(input_file: str):
-    """So sánh các solvers (Cập nhật: Dừng nếu PySAT UNSAT)"""
     print("="*80)
     print(f"SO SÁNH SOLVERS - {Path(input_file).name}")
     print("="*80)
@@ -238,38 +235,37 @@ def compare_solvers(input_file: str):
         return
     
     # Danh sách solvers
-    # LƯU Ý: PySAT phải luôn nằm đầu tiên để kiểm tra tính khả thi
     solvers = [('pysat', PySATSolver)]
     
     try:
         from astar_solver import AStarSolver
         solvers.append(('astar', AStarSolver))
     except ImportError:
-        print("⚠️ A* Solver không có")
+        print(" A* Solver không có")
     
     try:
         from backtrack_solver import BacktrackingSolver
         solvers.append(('backtrack', BacktrackingSolver))
     except ImportError:
-        print("⚠️ Backtracking Solver không có")
+        print(" Backtracking Solver không có")
     
     try:
         from bruteforce_solver import OptimizedBruteForceSolver
         if len(game.islands) <= 10:
             solvers.append(('bruteforce', OptimizedBruteForceSolver))
         else:
-            print(f"⚠️ Brute Force bỏ qua (quá nhiều đảo: {len(game.islands)})")
+            print(f" Brute Force bỏ qua (quá nhiều đảo: {len(game.islands)})")
     except ImportError:
-        print("⚠️ Brute Force Solver không có")
+        print(" Brute Force Solver không có")
     
     # Test từng solver
     results = {}
-    pysat_unsat = False  # Cờ đánh dấu nếu PySAT không tìm thấy lời giải
+    pysat_unsat = False  
 
     for name, SolverClass in solvers:
         # Nếu PySAT đã xác định UNSAT thì bỏ qua các thuật toán còn lại
         if pysat_unsat:
-            print(f"\n➤ {name.upper()}: SKIPPED (Do PySAT xác định UNSAT)")
+            print(f"\n {name.upper()}: SKIPPED (Do PySAT xác định UNSAT)")
             results[name] = {
                 'success': False,
                 'time': 0,
@@ -287,7 +283,7 @@ def compare_solvers(input_file: str):
             if solution:
                 is_valid, errors = game.validate_solution(solution)
                 if not is_valid:
-                    print(f"⚠️ Solution không hợp lệ:")
+                    print(f" Solution không hợp lệ:")
                     for err in errors[:3]:
                         print(f"   - {err}")
             
@@ -302,12 +298,12 @@ def compare_solvers(input_file: str):
                 print(f"➤ {name.upper()}: KHÔNG CÓ LỜI GIẢI.")
                 # Logic mới thêm vào ở đây:
                 if name == 'pysat':
-                    print("🛑 PySAT xác định map này VÔ NGHIỆM (UNSAT).")
+                    print(" PySAT xác định map này VÔ NGHIỆM (UNSAT).")
                     print("   ➜ Dừng so sánh các thuật toán khác để tiết kiệm thời gian.")
                     pysat_unsat = True  # Bật cờ để skip các vòng lặp sau
                 
         except Exception as e:
-            print(f"✗ Lỗi: {e}")
+            print(f" Lỗi: {e}")
             import traceback
             traceback.print_exc()
             results[name] = {
@@ -326,7 +322,7 @@ def compare_solvers(input_file: str):
     
     base_time = results.get('pysat', {}).get('time', 1)
     if base_time == 0:
-        base_time = 0.0001  # Tránh chia 0
+        base_time = 0.0001  
     
     for name, res in results.items():
         if res.get('success'):
@@ -352,10 +348,7 @@ def compare_solvers(input_file: str):
     print("="*80)
 
 
-# =============================================================================
 # CÁC HÀM HỖ TRỢ MENU TƯƠNG TÁC
-# =============================================================================
-
 def find_input_files():
     """
     Tìm tất cả file input (KHÔNG TRÙNG LẶP)
@@ -371,18 +364,17 @@ def find_input_files():
         if d.exists():
             files = sorted(list(d.glob("input-*.txt")))
             if files:
-                print(f"📁 Found {len(files)} input files in: {d}")
+                print(f" Found {len(files)} input files in: {d}")
                 return files
     
-    print("✗ No input files found!")
+    print(" No input files found!")
     return []
 
 
 def select_file_menu():
-    """Menu chọn file"""
     files = find_input_files()
     if not files:
-        print("✗ Không tìm thấy file input nào!")
+        print(" Không tìm thấy file input nào!")
         return None
     
     print("\n--- CHỌN FILE INPUT ---")
@@ -409,7 +401,6 @@ def select_file_menu():
 
 
 def select_solver_menu():
-    """Menu chọn solver"""
     solvers = [
         ('1', 'pysat', 'PySAT (Khuyên dùng)'),
         ('2', 'astar', 'A* Search'),
@@ -423,7 +414,7 @@ def select_solver_menu():
     while True:
         choice = input("Chọn thuật toán [1]: ").strip()
         if not choice:
-            return 'pysat'  # Default
+            return 'pysat'  
         for k, v, _ in solvers:
             if choice == k:
                 return v
@@ -431,7 +422,6 @@ def select_solver_menu():
 
 
 def interactive_mode():
-    """Chế độ tương tác dùng MENU Số"""
     while True:
         print("\n" + "="*50)
         print("   HASHIWOKAKERO SOLVER - MENU CHÍNH")
@@ -463,22 +453,19 @@ def interactive_mode():
                     input("\nẤn Enter để tiếp tục...")
                     
             elif choice == '4':  # Exit
-                print("\nTạm biệt!")
                 break
             else:
                 print("Lựa chọn không hợp lệ, vui lòng thử lại.")
         except KeyboardInterrupt:
-            print("\n\nTạm biệt!")
             break
         except Exception as e:
-            print(f"\n✗ Lỗi: {e}")
+            print(f"\n Lỗi: {e}")
             import traceback
             traceback.print_exc()
             input("\nẤn Enter để tiếp tục...")
 
 
 def main():
-    """Entry point"""
     parser = argparse.ArgumentParser(
         description='Hashiwokakero Solver - AI Project',
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -509,7 +496,6 @@ Examples:
     
     args = parser.parse_args()
     
-    # Tạo output directory
     os.makedirs("Source/Outputs", exist_ok=True)
     
     try:
@@ -522,14 +508,13 @@ Examples:
         elif args.input:
             solve_single(args.input, args.solver, args.output)
         else:
-            # Mặc định vào chế độ interactive nếu không có tham số
-            print("💡 Tip: Dùng -h để xem các options")
+            print(" Tip: Dùng -h để xem các options")
             interactive_mode()
     except KeyboardInterrupt:
         print("\n\nĐã dừng chương trình.")
         sys.exit(0)
     except Exception as e:
-        print(f"\n✗ Lỗi nghiêm trọng: {e}")
+        print(f"\n Lỗi nghiêm trọng: {e}")
         import traceback
         traceback.print_exc()
         sys.exit(1)
