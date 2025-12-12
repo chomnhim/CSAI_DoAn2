@@ -1,14 +1,15 @@
 import time
+from collections import deque
 from itertools import combinations
 from pysat.solvers import Glucose3
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Set
 from helper_01 import HashiwokakeroGame
 
 class CNFGenerator:
     
     def __init__(self, game: HashiwokakeroGame):
         self.game = game
-        self.variables = {}
+        self.variables = {}  # Maps (r1, c1, r2, c2, k) -> int ID
         self.var_counter = 1
         self.clauses = []
         self.neighbors_map = {}
@@ -91,6 +92,7 @@ class CNFGenerator:
     def _add_island_capacity_constraints(self):
         for r, c, val in self.game.islands:
             neighbors = self.neighbors_map.get((r, c), [])
+            # Quick check: if max capacity < required value -> impossible
             if len(neighbors) * 2 < val: return False
             
             valid_configs = self._generate_configs(neighbors, val)
@@ -112,7 +114,9 @@ class CNFGenerator:
                         if v1: self.clauses.append([-c_var, -v1])
                         if v2: self.clauses.append([-c_var, -v2])
             
-            self.clauses.append(config_vars)
+            # Must choose exactly one config
+            self.clauses.append(config_vars) # At least one
+            # At most one
             for i in range(len(config_vars)):
                 for j in range(i + 1, len(config_vars)):
                     self.clauses.append([-config_vars[i], -config_vars[j]])
@@ -126,15 +130,19 @@ class CNFGenerator:
                 if current_sum == target_sum: results.append(list(current_config))
                 return
             nr, nc = neighbors[idx]
+            # Option 0 bridges
             backtrack(idx + 1, current_sum, current_config)
+            # Option 1 bridge
             current_config.append((nr, nc, 1))
             backtrack(idx + 1, current_sum + 1, current_config)
             current_config.pop()
+            # Option 2 bridges
             current_config.append((nr, nc, 2))
             backtrack(idx + 1, current_sum + 2, current_config)
             current_config.pop()
         backtrack(0, 0, [])
         return results
+
 
 class PySATSolver:
     def __init__(self, game: HashiwokakeroGame):
@@ -145,11 +153,12 @@ class PySATSolver:
         print("Solving with PySAT (Glucose3)...")
         start_time = time.perf_counter()
         
+        # 1. Generate CNF
         result = self.cnf_gen.generate_cnf()
         if result is None:
             solve_time = time.perf_counter() - start_time
-            print(f" UNSAT (Local Conflict Detected) ({solve_time:.4f}s)")
-            self.diagnose_failure()
+            print(f"  UNSAT (Local Conflict Detected in Generator) ({solve_time:.4f}s)")
+            self.diagnose_failure(connectivity_failed=False)
             return None, solve_time
 
         clauses, variables = result
@@ -157,16 +166,71 @@ class PySATSolver:
             return None, time.perf_counter() - start_time
             
         solver = Glucose3()
-        for c in clauses: solver.add_clause(c)
+        for c in clauses: 
+            solver.add_clause(c)
+        
+        # 2. Iterative Solving (Connectivity Check Loop)
+        max_attempts = 100
+        attempt = 0
+        bridge_var_ids = set(variables.values())
+        
+        while solver.solve() and attempt < max_attempts:
+            attempt += 1
+            model = solver.get_model()
+            solution = self._extract_solution(model, variables)
             
-        if solver.solve():
-            print(f" SAT Found ({time.perf_counter() - start_time:.4f}s)")
-            return self._extract_solution(solver.get_model(), variables), time.perf_counter() - start_time
+            # Check Connectivity
+            if self._is_connected(solution):
+                solve_time = time.perf_counter() - start_time
+                print(f"  SAT Found (Connected) - Attempt {attempt} ({solve_time:.4f}s)")
+                return solution, solve_time
+            
+            # Blocking Clause
+            blocking_clause = [-lit for lit in model if abs(lit) in bridge_var_ids]
+            solver.add_clause(blocking_clause)
+            
+            if attempt <= 5 or attempt % 10 == 0:
+                print(f"    Attempt {attempt}: Disconnected solution found. Retrying...")
+        
+        solve_time = time.perf_counter() - start_time
+        
+        if attempt == 0:
+            print(f"  UNSAT (Basic Constraints Unsatisfiable) ({solve_time:.4f}s)")
+            self.diagnose_failure(connectivity_failed=False) 
         else:
-            solve_time = time.perf_counter() - start_time
-            print(f" UNSAT ({solve_time:.4f}s)")
-            self.diagnose_failure()
-            return None, solve_time
+            print(f"  UNSAT (No connected solution found after {attempt} attempts) ({solve_time:.4f}s)")
+            self.diagnose_failure(connectivity_failed=True)
+            
+        return None, solve_time
+
+    def _is_connected(self, solution: dict) -> bool:
+        if not self.game.islands:
+            return True
+        
+        # Build graph from solution
+        graph = {}
+        for r, c, _ in self.game.islands:
+            graph[(r, c)] = []
+        
+        for (r1, c1, r2, c2), num_bridges in solution.items():
+            if num_bridges > 0:
+                graph[(r1, c1)].append((r2, c2))
+                graph[(r2, c2)].append((r1, c1))
+        
+        # BFS
+        start_island = (self.game.islands[0][0], self.game.islands[0][1])
+        visited = set()
+        queue = deque([start_island])
+        visited.add(start_island)
+        
+        while queue:
+            current = queue.popleft()
+            for neighbor in graph.get(current, []):
+                if neighbor not in visited:
+                    visited.add(neighbor)
+                    queue.append(neighbor)
+        
+        return len(visited) == len(self.game.islands)
 
     def _extract_solution(self, model, variables):
         solution = {}
@@ -174,14 +238,24 @@ class PySATSolver:
         for val in model:
             if val > 0:
                 key = id_to_key.get(val)
+                # Ensure it's a bridge variable (5 components)
                 if key and len(key) == 5:
                     solution[(key[0], key[1], key[2], key[3])] = key[4]
         return solution
 
-    def diagnose_failure(self):
-        print("\n" + "!"*40)
-        print("PHÂN TÍCH LỖI (DIAGNOSIS REPORT)")
-        print("!"*40)
+    def diagnose_failure(self, connectivity_failed=False):
+        print("\n" + "!"*50)
+        print("DIAGNOSIS REPORT")
+        print("!"*50)
+        
+        if connectivity_failed:
+            print("  CONNECTIVITY FAILURE:")
+            print("  - Solutions satisfying local constraints were found.")
+            print("  - HOWEVER, all found solutions were disconnected (split into groups).")
+            print("  - No solution exists that connects ALL islands together.")
+            print("  - The puzzle design might be invalid.")
+            print("!"*50 + "\n")
+            return
         
         islands = self.game.islands
         neighbors_map = self.cnf_gen.neighbors_map
@@ -189,8 +263,8 @@ class PySATSolver:
 
         total_bridges = sum(val for r, c, val in islands)
         if total_bridges % 2 != 0:
-            print(f" LỖI TOÁN HỌC: Tổng giá trị các đảo là {total_bridges} (Số lẻ).")
-            print("  (Tổng số cầu x 2 luôn phải là số chẵn -> Không thể giải được).")
+            print(f" MATHEMATICAL ERROR: Total island value is {total_bridges} (Odd number).")
+            print("  (Sum of bridges x 2 must be even -> Impossible to solve).")
             found_reason = True
 
         for r, c, val in islands:
@@ -199,13 +273,13 @@ class PySATSolver:
             max_possible = num_neighbors * 2
             
             if val > max_possible:
-                print(f" LỖI CỤC BỘ tại Đảo ({r},{c}) giá trị {val}:")
-                print(f"  - Chỉ có {num_neighbors} láng giềng.")
-                print(f"  - Tối đa chỉ nối được {max_possible} cầu (thiếu {val - max_possible}).")
+                print(f" LOCAL ERROR at Island ({r},{c}) value {val}:")
+                print(f"  - Only has {num_neighbors} neighbors.")
+                print(f"  - Max possible bridges: {max_possible} (Deficit: {val - max_possible}).")
                 found_reason = True
             
             if num_neighbors == 0:
-                print(f" LỖI CÔ LẬP tại Đảo ({r},{c}): Cần {val} cầu nhưng không có láng giềng nào.")
+                print(f" ISOLATION ERROR at Island ({r},{c}): Needs {val} bridges but has NO neighbors.")
                 found_reason = True
 
         for r, c, val in islands:
@@ -218,14 +292,14 @@ class PySATSolver:
                 max_neighbors_can_take += max_contribution
             
             if val > max_neighbors_can_take:
-                print(f" LỖI LÁNG GIỀNG tại Đảo ({r},{c}) giá trị {val}:")
-                print(f"  - Tổng sức chứa của các láng giềng chỉ là {max_neighbors_can_take}.")
-                print(f"  - Không đủ chỗ để nối {val} cầu.")
+                print(f" NEIGHBOR CAPACITY ERROR at Island ({r},{c}) value {val}:")
+                print(f"  - Neighbors can only accept a total of {max_neighbors_can_take} bridges.")
+                print(f"  - Not enough capacity to support {val} bridges.")
                 found_reason = True
 
         if not found_reason:
-            print(" LỖI CẤU TRÚC PHỨC TẠP (Global Conflict):")
-            print("  Các ràng buộc cục bộ đều thỏa mãn, nhưng mâu thuẫn xảy ra ở cấu trúc toàn cục.")
-            print("  (Ví dụ: Cầu bắt buộc phải cắt nhau mới nối đủ số, hoặc đồ thị bị chia cắt).")
+            print(" GLOBAL CONFLICT:")
+            print("  All local constraints seem valid, but a global contradiction exists.")
+            print("  (e.g., Mandatory crossings, or isolated sub-graphs preventing a solution).")
         
-        print("!"*40 + "\n")
+        print("!"*50 + "\n")

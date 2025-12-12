@@ -143,10 +143,14 @@ class HashiwokakeroGame:
         with open(filename, 'w') as f:
             for row in result:
                 f.write('[' + ', '.join(f'"{x}"' for x in row) + ']\n')
-    
+ 
     def validate_solution(self, solution: dict) -> Tuple[bool, List[str]]:
+        """
+        Validates the solution against game rules.
+        """
         errors = []
         
+        # Check 1: Bridge count per island
         bridges_count = {}
         for island in self.islands:
             bridges_count[(island[0], island[1])] = 0
@@ -158,15 +162,45 @@ class HashiwokakeroGame:
         for i, j, required in self.islands:
             actual = bridges_count.get((i, j), 0)
             if actual != required:
-                errors.append(f"Đảo ({i},{j}): cần {required} cầu, có {actual} cầu")
+                errors.append(f"Island ({i},{j}): needs {required} bridges, has {actual}")
         
+        # Check 2: Crossing bridges
         bridges_list = list(solution.keys())
         for idx1 in range(len(bridges_list)):
             for idx2 in range(idx1 + 1, len(bridges_list)):
                 if self._bridges_cross(bridges_list[idx1], bridges_list[idx2]):
-                    errors.append(f"Cầu {bridges_list[idx1]} cắt {bridges_list[idx2]}")
-        
+                    errors.append(f"Bridge {bridges_list[idx1]} crosses {bridges_list[idx2]}")
+
+        # Check 3: Connectivity
+        # The bridges must connect the islands into a single connected group
+        if not self._is_connected(solution):
+             errors.append("Islands are not fully connected (Graph is disconnected)")
         return len(errors) == 0, errors
+
+    def _is_connected(self, solution: dict) -> bool:
+        if not self.islands:
+            return True
+            
+        # Build adjacency list
+        adj = {(r, c): [] for r, c, _ in self.islands}
+        for (r1, c1, r2, c2), count in solution.items():
+            if count > 0:
+                adj[(r1, c1)].append((r2, c2))
+                adj[(r2, c2)].append((r1, c1))
+        
+        # BFS
+        start_node = (self.islands[0][0], self.islands[0][1])
+        queue = [start_node]
+        visited = {start_node}
+        
+        while queue:
+            u = queue.pop(0)
+            for v in adj[u]:
+                if v not in visited:
+                    visited.add(v)
+                    queue.append(v)
+        
+        return len(visited) == len(self.islands)
     
     def __str__(self):
         return f"Hashiwokakero({self.rows}x{self.cols}, {len(self.islands)} islands)"
