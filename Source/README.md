@@ -152,16 +152,36 @@ StudentID1_StudentID2/
 │
 ├── Source/
 │   ├── Inputs/                    # Thư mục chứa test cases
-│   │   ├── input-01.txt          # Test case 1 (7x7)
-│   │   ├── input-02.txt          # Test case 2 (3x3)
+│   │   ├── input-01.txt          # Test case 1 (5x5)
+│   │   ├── input-02.txt          # Test case 2 (5x5)
 │   │   ├── input-03.txt          # Test case 3 (5x5)
 │   │   ├── input-04.txt          # Test case 4 (9x9)
-│   │   ├── input-05.txt          # Test case 5 (11x11)
-│   │   ├── input-06.txt          # Test case 6 (7x7 - Cross)
-│   │   ├── input-07.txt          # Test case 7 (9x9 - Spiral)
+│   │   ├── input-05.txt          # Test case 5 (5x5)
+│   │   ├── input-06.txt          # Test case 6 (7x7)
+│   │   ├── input-07.txt          # Test case 7 (7x7)
 │   │   ├── input-08.txt          # Test case 8 (11x11)
 │   │   ├── input-09.txt          # Test case 9 (13x13)
 │   │   └── input-10.txt          # Test case 10 (17x17)
+│   │   ├── input-11.txt          # Test case 11 (10x10)
+│   │   ├── input-12.txt          # Test case 12 (10x10)
+│   │   ├── input-13.txt          # Test case 13 (10x10)
+│   │   ├── input-14.txt          # Test case 14 (10x10)
+│   │   ├── input-15.txt          # Test case 15 (10x10)
+│   │   ├── input-16.txt          # Test case 16 (15x15)
+│   │   ├── input-17.txt          # Test case 17 (15x15)
+│   │   ├── input-18.txt          # Test case 18 (15x15)
+│   │   ├── input-19.txt          # Test case 19 (15x15)
+│   │   ├── input-20.txt          # Test case 20 (15x15)
+│   │   ├── input-21.txt          # Test case 21 (20x20)
+│   │   ├── input-22.txt          # Test case 22 (20x20)
+│   │   ├── input-23.txt          # Test case 23 (25x25)
+│   │   ├── input-24.txt          # Test case 24 (25x25)
+│   │   ├── input-25.txt          # Test case 25 (10x10)
+│   │   ├── input-26.txt          # Test case 26 (10x10)
+│   │   ├── input-27.txt          # Test case 27 (10x10)
+│   │   ├── input-28.txt          # Test case 28 (10x10)
+│   │   ├── input-29.txt          # Test case 29 (10x10)
+│   │   ├── input-30.txt          # Test case 30 (15x15)
 │   │
 │   ├── Outputs/                   # Thư mục kết quả (tự động tạo)
 │   │   ├── output-01.txt
@@ -174,10 +194,8 @@ StudentID1_StudentID2/
 │   ├── astar_solver.py            # A* algorithm
 │   ├── backtrack_solver.py        # Backtracking algorithm
 │   ├── bruteforce_solver.py       # Brute force algorithm
-│   ├── generate_tests.py          # Tool tạo test cases
 │   ├── solver_template.py         # Template cho solver
 │   ├── requirements.txt           # Thư viện cần cài
-│   └── README.txt                 # File này
 │
 └── README.md                      # Hướng dẫn chi tiết
 ```
@@ -242,15 +260,15 @@ File text với ma trận các số, phân cách bằng dấu phẩy:
 - `0`: Ô trống
 - `1-8`: Đảo với số cầu cần nối
 
-**Ví dụ** (`input-01.txt`):
+**Ví dụ** (`input-06.txt`):
 ```
-0,2,0,5,0,0,2
+0,0,3,0,2,0,0
+2,0,0,0,0,0,0
 0,0,0,0,0,0,0
-4,0,2,0,2,0,4
+5,0,5,0,2,0,0
 0,0,0,0,0,0,0
-0,1,0,5,0,2,0
-0,0,0,0,0,0,0
-4,0,0,0,0,0,3
+1,0,0,0,1,0,0
+0,0,1,0,0,0,0
 ```
 
 ### Output Format
@@ -263,15 +281,15 @@ File text với ma trận kết quả:
 - `"|"`: 1 cầu dọc
 - `"$"`: 2 cầu dọc
 
-**Ví dụ** (`output-01.txt`):
+**Ví dụ** (`output-06.txt`):
 ```
-["0", "2", "=", "5", "-", "-", "2"]
-["0", "0", "0", "$", "0", "0", "|"]
-["4", "=", "2", "$", "2", "=", "4"]
-["$", "0", "0", "$", "0", "0", "|"]
-["$", "1", "-", "5", "=", "2", "|"]
-["$", "0", "0", "0", "0", "0", "|"]
-["4", "=", "=", "=", "=", "=", "3"]
+["0", "0", "3", "=", "2", "0", "0"]
+["2", "0", "|", "0", "0", "0", "0"]
+["$", "0", "|", "0", "0", "0", "0"]
+["5", "=", "5", "-", "2", "0", "0"]
+["|", "0", "|", "0", "|", "0", "0"]
+["1", "0", "|", "0", "1", "0", "0"]
+["0", "0", "1", "0", "0", "0", "0"]
 ```
 
 ### Trường Hợp Không Có Lời Giải (UNSAT)
@@ -293,24 +311,27 @@ NO SOLUTION
 SOLVING: Inputs\input-02.txt
 SOLVER: PYSAT
 ================================================================================
-Grid: 3x3
+Grid: 5x5
 Islands: 4
 
 Solving with PySAT (Glucose3)...
-✓ SAT Found (0.0002s)
+    Attempt 1: Disconnected solution found. Retrying...
+  SAT Found (Connected) - Attempt 2 (0.0004s)
 
 ================================================================================
 SOLUTION
 ================================================================================
-['2', '=', '2']
-['0', '0', '0']
-['2', '=', '2']
+['0', '0', '0', '0', '0']
+['0', '2', '-', '2', '0']
+['0', '|', '0', '|', '0']
+['0', '1', '0', '1', '0']
+['0', '0', '0', '0', '0']
 
-✓ Solution hợp lệ!
+ Solution hợp lệ!
 
-✓ Đã lưu solution vào: Outputs\output-02.txt
+ Đã lưu solution vào: Source/Outputs\output-02.txt
 
-⏱ Thời gian: 0.0003s
+ Thời gian: 0.0004s
 ```
 
 ### Ví Dụ 2: So sánh thuật toán
@@ -326,7 +347,7 @@ Grid: 5x5, Islands: 9
 
 --- Testing PYSAT ---
 Solving with PySAT (Glucose3)...
-✓ SAT Found (0.0016s)
+  SAT Found (Connected) - Attempt 1 (0.0012s)
 
 --- Testing ASTAR ---
 Solving with A*...
@@ -334,12 +355,12 @@ Solving with A*...
 
 --- Testing BACKTRACK ---
 Solving with Backtracking...
-✓ Solution found! Nodes: 9
+ Solution found! Nodes: 9
 
 --- Testing BRUTEFORCE ---
 
 Solving with Optimized Brute Force...
-✓ Found solution!
+ Found solution!
   - Nodes explored: 46,159
 
 ================================================================================
@@ -347,10 +368,10 @@ KẾT QUẢ SO SÁNH
 ================================================================================
 Solver          Status       Valid    Time (s)     Nodes           Speedup
 --------------------------------------------------------------------------------
-PYSAT           ✓ Pass       ✓        0.0018       -               1.00x
-ASTAR           ✓ Pass       ✓        0.0045       13              0.39x
-BACKTRACK       ✓ Pass       ✓        0.0011       9               1.56x
-BRUTEFORCE      ✓ Pass       ✓        0.4016       46,159          0.00x
+PYSAT           ✓ Pass       ✓        0.0012       -               1.00x
+ASTAR           ✓ Pass       ✓        0.0035       13              0.33x
+BACKTRACK       ✓ Pass       ✓        0.0013       9               0.88x
+BRUTEFORCE      ✓ Pass       ✓        0.2557       46,159          0.00x
 ================================================================================
 ```
 
@@ -362,75 +383,334 @@ BRUTEFORCE      ✓ Pass       ✓        0.4016       46,159          0.00x
 ================================================================================
 BENCHMARK - CHẠY TẤT CẢ TEST CASES
 ================================================================================
-📁 Found 10 input files in: Inputs
-Tìm thấy 10 test cases.
+ Found 30 input files in: Inputs
+Tìm thấy 30 test cases.
+
 
 ================================================================================
-Test 1/10: input-01.txt
+Test 1/30: input-01.txt
 ================================================================================
-Size: 7x7, Islands: 12
+Size: 5x5, Islands: 4
 Solving with PySAT (Glucose3)...
-✓ SAT Found (0.0458s)
-✓ Đã lưu: Outputs\output-01.txt
+    Attempt 1: Disconnected solution found. Retrying...
+  SAT Found (Connected) - Attempt 2 (0.0004s)
+✓ Đã lưu: Source\Outputs\output-01.txt
 
 ================================================================================
-Test 2/10: input-02.txt
+Test 2/30: input-02.txt
 ================================================================================
-Size: 3x3, Islands: 4
+Size: 5x5, Islands: 4
 Solving with PySAT (Glucose3)...
-✓ SAT Found (0.0003s)
-✓ Đã lưu: Outputs\output-02.txt
+    Attempt 1: Disconnected solution found. Retrying...
+  SAT Found (Connected) - Attempt 2 (0.0004s)
+✓ Đã lưu: Source\Outputs\output-02.txt
 
 ================================================================================
-Test 3/10: input-03.txt
+Test 3/30: input-03.txt
 ================================================================================
 Size: 5x5, Islands: 9
 Solving with PySAT (Glucose3)...
-✓ SAT Found (0.0010s)
-✓ Đã lưu: Outputs\output-03.txt
-
-... (các test khác)
+  SAT Found (Connected) - Attempt 1 (0.0008s)
+✓ Đã lưu: Source\Outputs\output-03.txt
 
 ================================================================================
-Test 9/10: input-09.txt
+Test 4/30: input-04.txt
+================================================================================
+Size: 9x9, Islands: 16
+Solving with PySAT (Glucose3)...
+  UNSAT (Basic Constraints Unsatisfiable) (0.0006s)
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+DIAGNOSIS REPORT
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ GLOBAL CONFLICT:
+  All local constraints seem valid, but a global contradiction exists.
+  (e.g., Mandatory crossings, or isolated sub-graphs preventing a solution).
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+ KHÔNG CÓ LỜI GIẢI.
+
+================================================================================
+Test 5/30: input-05.txt
+================================================================================
+Size: 5x5, Islands: 5
+Solving with PySAT (Glucose3)...
+    Attempt 1: Disconnected solution found. Retrying...
+  SAT Found (Connected) - Attempt 2 (0.0005s)
+✓ Đã lưu: Source\Outputs\output-05.txt
+
+================================================================================
+Test 6/30: input-06.txt
+================================================================================
+Size: 7x7, Islands: 9
+Solving with PySAT (Glucose3)...
+  SAT Found (Connected) - Attempt 1 (0.0006s)
+✓ Đã lưu: Source\Outputs\output-06.txt
+
+================================================================================
+Test 7/30: input-07.txt
+================================================================================
+Size: 7x7, Islands: 9
+Solving with PySAT (Glucose3)...
+    Attempt 1: Disconnected solution found. Retrying...
+    Attempt 2: Disconnected solution found. Retrying...
+  SAT Found (Connected) - Attempt 3 (0.0006s)
+✓ Đã lưu: Source\Outputs\output-07.txt
+
+================================================================================
+Test 8/30: input-08.txt
+================================================================================
+Size: 11x11, Islands: 36
+Solving with PySAT (Glucose3)...
+    Attempt 1: Disconnected solution found. Retrying...
+    Attempt 2: Disconnected solution found. Retrying...
+    Attempt 3: Disconnected solution found. Retrying...
+    Attempt 4: Disconnected solution found. Retrying...
+    Attempt 5: Disconnected solution found. Retrying...
+    Attempt 10: Disconnected solution found. Retrying...
+  SAT Found (Connected) - Attempt 17 (0.0104s)
+✓ Đã lưu: Source\Outputs\output-08.txt
+
+================================================================================
+Test 9/30: input-09.txt
 ================================================================================
 Size: 13x13, Islands: 24
 Solving with PySAT (Glucose3)...
-✗ UNSAT (0.0011s)
+  UNSAT (Basic Constraints Unsatisfiable) (0.0007s)
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-PHÂN TÍCH LỖI (DIAGNOSIS REPORT)
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-➤ LỖI CẤU TRÚC PHỨC TẠP (Global Conflict):
-  Các ràng buộc cục bộ đều thỏa mãn, nhưng mâu thuẫn xảy ra ở cấu trúc toàn cục.
-  (Ví dụ: Cầu bắt buộc phải cắt nhau mới nối đủ số, hoặc đồ thị bị chia cắt).
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+DIAGNOSIS REPORT
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ GLOBAL CONFLICT:
+  All local constraints seem valid, but a global contradiction exists.
+  (e.g., Mandatory crossings, or isolated sub-graphs preventing a solution).
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-➤ KHÔNG CÓ LỜI GIẢI.
+ KHÔNG CÓ LỜI GIẢI.
+
+================================================================================
+Test 10/30: input-10.txt
+================================================================================
+Size: 17x17, Islands: 13
+Solving with PySAT (Glucose3)...
+  SAT Found (Connected) - Attempt 1 (0.0004s)
+✓ Đã lưu: Source\Outputs\output-10.txt
+
+================================================================================
+Test 11/30: input-11.txt
+================================================================================
+Size: 10x10, Islands: 19
+Solving with PySAT (Glucose3)...
+  SAT Found (Connected) - Attempt 1 (0.0012s)
+✓ Đã lưu: Source\Outputs\output-11.txt
+
+================================================================================
+Test 12/30: input-12.txt
+================================================================================
+Size: 10x10, Islands: 15
+Solving with PySAT (Glucose3)...
+  SAT Found (Connected) - Attempt 1 (0.0008s)
+✓ Đã lưu: Source\Outputs\output-12.txt
+
+================================================================================
+Test 13/30: input-13.txt
+================================================================================
+Size: 10x10, Islands: 16
+Solving with PySAT (Glucose3)...
+  SAT Found (Connected) - Attempt 1 (0.0006s)
+✓ Đã lưu: Source\Outputs\output-13.txt
+
+================================================================================
+Test 14/30: input-14.txt
+================================================================================
+Size: 10x10, Islands: 15
+Solving with PySAT (Glucose3)...
+    Attempt 1: Disconnected solution found. Retrying...
+    Attempt 2: Disconnected solution found. Retrying...
+    Attempt 3: Disconnected solution found. Retrying...
+  SAT Found (Connected) - Attempt 4 (0.0032s)
+✓ Đã lưu: Source\Outputs\output-14.txt
+
+================================================================================
+Test 15/30: input-15.txt
+================================================================================
+Size: 10x10, Islands: 14
+Solving with PySAT (Glucose3)...
+  SAT Found (Connected) - Attempt 1 (0.0005s)
+✓ Đã lưu: Source\Outputs\output-15.txt
+
+================================================================================
+Test 16/30: input-16.txt
+================================================================================
+Size: 15x15, Islands: 29
+Solving with PySAT (Glucose3)...
+    Attempt 1: Disconnected solution found. Retrying...
+  SAT Found (Connected) - Attempt 2 (0.0018s)
+✓ Đã lưu: Source\Outputs\output-16.txt
+
+================================================================================
+Test 17/30: input-17.txt
+================================================================================
+Size: 15x15, Islands: 28
+Solving with PySAT (Glucose3)...
+    Attempt 1: Disconnected solution found. Retrying...
+    Attempt 2: Disconnected solution found. Retrying...
+    Attempt 3: Disconnected solution found. Retrying...
+    Attempt 4: Disconnected solution found. Retrying...
+    Attempt 5: Disconnected solution found. Retrying...
+  SAT Found (Connected) - Attempt 8 (0.0040s)
+✓ Đã lưu: Source\Outputs\output-17.txt
+
+================================================================================
+Test 18/30: input-18.txt
+================================================================================
+Size: 15x15, Islands: 28
+Solving with PySAT (Glucose3)...
+  SAT Found (Connected) - Attempt 1 (0.0014s)
+✓ Đã lưu: Source\Outputs\output-18.txt
+
+================================================================================
+Test 19/30: input-19.txt
+================================================================================
+Size: 15x15, Islands: 29
+Solving with PySAT (Glucose3)...
+  SAT Found (Connected) - Attempt 1 (0.0019s)
+✓ Đã lưu: Source\Outputs\output-19.txt
+
+================================================================================
+Test 20/30: input-20.txt
+================================================================================
+Size: 15x15, Islands: 25
+Solving with PySAT (Glucose3)...
+  SAT Found (Connected) - Attempt 1 (0.0015s)
+✓ Đã lưu: Source\Outputs\output-20.txt
+
+================================================================================
+Test 21/30: input-21.txt
+================================================================================
+Size: 20x20, Islands: 32
+Solving with PySAT (Glucose3)...
+  SAT Found (Connected) - Attempt 1 (0.0015s)
+✓ Đã lưu: Source\Outputs\output-21.txt
+
+================================================================================
+Test 22/30: input-22.txt
+================================================================================
+Size: 20x20, Islands: 42
+Solving with PySAT (Glucose3)...
+    Attempt 1: Disconnected solution found. Retrying...
+  SAT Found (Connected) - Attempt 2 (0.0029s)
+✓ Đã lưu: Source\Outputs\output-22.txt
+
+================================================================================
+Test 23/30: input-23.txt
+================================================================================
+Size: 25x25, Islands: 46
+Solving with PySAT (Glucose3)...
+  SAT Found (Connected) - Attempt 1 (0.0027s)
+✓ Đã lưu: Source\Outputs\output-23.txt
+
+================================================================================
+Test 24/30: input-24.txt
+================================================================================
+Size: 25x25, Islands: 60
+Solving with PySAT (Glucose3)...
+  SAT Found (Connected) - Attempt 1 (0.0046s)
+✓ Đã lưu: Source\Outputs\output-24.txt
+
+================================================================================
+Test 25/30: input-25.txt
+================================================================================
+Size: 10x10, Islands: 24
+Solving with PySAT (Glucose3)...
+    Attempt 1: Disconnected solution found. Retrying...
+  SAT Found (Connected) - Attempt 2 (0.0027s)
+✓ Đã lưu: Source\Outputs\output-25.txt
+
+================================================================================
+Test 26/30: input-26.txt
+================================================================================
+Size: 10x10, Islands: 35
+Solving with PySAT (Glucose3)...
+    Attempt 1: Disconnected solution found. Retrying...
+  SAT Found (Connected) - Attempt 2 (0.0036s)
+✓ Đã lưu: Source\Outputs\output-26.txt
+
+================================================================================
+Test 27/30: input-27.txt
+================================================================================
+Size: 10x10, Islands: 28
+Solving with PySAT (Glucose3)...
+  SAT Found (Connected) - Attempt 1 (0.0018s)
+✓ Đã lưu: Source\Outputs\output-27.txt
+
+================================================================================
+Test 28/30: input-28.txt
+================================================================================
+Size: 10x10, Islands: 27
+Solving with PySAT (Glucose3)...
+  SAT Found (Connected) - Attempt 1 (0.0023s)
+✓ Đã lưu: Source\Outputs\output-28.txt
+
+================================================================================
+Test 29/30: input-29.txt
+================================================================================
+Size: 10x10, Islands: 37
+Solving with PySAT (Glucose3)...
+  SAT Found (Connected) - Attempt 1 (0.0024s)
+✓ Đã lưu: Source\Outputs\output-29.txt
+
+================================================================================
+Test 30/30: input-30.txt
+================================================================================
+Size: 15x15, Islands: 74
+Solving with PySAT (Glucose3)...
+  SAT Found (Connected) - Attempt 1 (0.0120s)
+✓ Đã lưu: Source\Outputs\output-30.txt
 
 ================================================================================
 TỔNG KẾT BENCHMARK
 ================================================================================
 File                 Size       Islands    Status       Time (s)     Valid
 --------------------------------------------------------------------------------
-input-01.txt         7x7        12         ✓ Pass       0.0471       ✓
-input-02.txt         3x3        4          ✓ Pass       0.0004       ✓
-input-03.txt         5x5        9          ✓ Pass       0.0012       ✓
-input-04.txt         9x9        16         ✗ No Sol     0.0008       -
-input-05.txt         11x11      36         ✓ Pass       0.0122       ✓
-input-06.txt         7x7        7          ✓ Pass       0.0007       ✓
-input-07.txt         9x9        25         ✓ Pass       0.0027       ✓
-input-08.txt         11x11      36         ✓ Pass       0.0100       ✓
-input-09.txt         13x13      24         ✗ No Sol     0.0011       -
-input-10.txt         17x17      13         ✓ Pass       0.0006       ✓
+input-01.txt         5x5        4          ✓ Pass       0.0004       ✓
+input-02.txt         5x5        4          ✓ Pass       0.0004       ✓
+input-03.txt         5x5        9          ✓ Pass       0.0008       ✓
+input-04.txt         9x9        16         ✗ No Sol     0.0006       -
+input-05.txt         5x5        5          ✓ Pass       0.0005       ✓
+input-06.txt         7x7        9          ✓ Pass       0.0006       ✓
+input-07.txt         7x7        9          ✓ Pass       0.0006       ✓
+input-08.txt         11x11      36         ✓ Pass       0.0104       ✓
+input-09.txt         13x13      24         ✗ No Sol     0.0007       -
+input-10.txt         17x17      13         ✓ Pass       0.0004       ✓
+input-11.txt         10x10      19         ✓ Pass       0.0012       ✓
+input-12.txt         10x10      15         ✓ Pass       0.0008       ✓
+input-13.txt         10x10      16         ✓ Pass       0.0006       ✓
+input-14.txt         10x10      15         ✓ Pass       0.0032       ✓
+input-15.txt         10x10      14         ✓ Pass       0.0005       ✓
+input-16.txt         15x15      29         ✓ Pass       0.0018       ✓
+input-17.txt         15x15      28         ✓ Pass       0.0040       ✓       
+input-18.txt         15x15      28         ✓ Pass       0.0014       ✓
+input-19.txt         15x15      29         ✓ Pass       0.0019       ✓
+input-20.txt         15x15      25         ✓ Pass       0.0015       ✓
+input-21.txt         20x20      32         ✓ Pass       0.0015       ✓
+input-22.txt         20x20      42         ✓ Pass       0.0029       ✓
+input-23.txt         25x25      46         ✓ Pass       0.0027       ✓
+input-24.txt         25x25      60         ✓ Pass       0.0046       ✓
+input-25.txt         10x10      24         ✓ Pass       0.0027       ✓
+input-26.txt         10x10      35         ✓ Pass       0.0036       ✓
+input-27.txt         10x10      28         ✓ Pass       0.0018       ✓
+input-28.txt         10x10      27         ✓ Pass       0.0023       ✓
+input-29.txt         10x10      37         ✓ Pass       0.0024       ✓
+input-30.txt         15x15      74         ✓ Pass       0.0120       ✓
 
 ================================================================================
-Tổng: 10 tests
-Có lời giải: 8 (80.0%)
-Không có lời giải: 2 (20.0%)
-Solution hợp lệ: 8/8
-Tổng thời gian: 0.0768s
-Trung bình: 0.0077s/test
+Tổng: 30 tests
+Có lời giải: 28 (93.3%)
+Không có lời giải: 2 (6.7%)
+Solution hợp lệ: 28/28
+Tổng thời gian: 0.0687s
+Trung bình: 0.0023s/test
 ================================================================================
 ```
 
@@ -440,29 +720,29 @@ Trung bình: 0.0077s/test
 
 | Test Case | Kích thước | Số đảo | PySAT | A* | Backtracking | Brute Force |
 |-----------|------------|--------|-------|-----|--------------|-------------|
-| input-01.txt | 7x7 | 12 | 0.0471s | ~0.5s | ~1.2s | N/A |
-| input-02.txt | 3x3 | 4 | 0.0004s | 0.001s | 0.003s | 0.05s |
-| input-03.txt | 5x5 | 9 | 0.0012s | 0.0045s | 0.0011s | 0.4016s |
-| input-04.txt | 9x9 | 16 | 0.0008s (UNSAT) | - | - | - |
-| input-05.txt | 11x11 | 36 | 0.0122s | ~5s | ~20s | N/A |
-| input-06.txt | 7x7 | 7 | 0.0007s | ~0.1s | ~0.3s | N/A |
-| input-07.txt | 9x9 | 25 | 0.0027s | ~2s | ~8s | N/A |
-| input-08.txt | 11x11 | 36 | 0.0100s | ~4s | ~15s | N/A |
-| input-09.txt | 13x13 | 24 | 0.0011s (UNSAT) | - | - | - |
-| input-10.txt | 17x17 | 13 | 0.0006s | ~0.2s | ~0.5s | N/A |
+| input-01.txt | 5x5 | 4 | 0.0004s | 0.0003s | 0.0002s | 0.0001 |
+| input-03.txt | 5x5 | 9 | 0.0012s | 0.0034s | 0.0006s | 0.261s |
+| input-05.txt | 5x5 | 5 | 0.0004s | 0.0003s | 0.0002s | 0.0001s |
+| input-06.txt | 7x7 | 9 | 0.0006s | 0.0017s | 0.0009s | 0.0422s |
+| input-08.txt | 11x11 | 36 | 0.0122s | 0.1656s | 0.4226s | N/A |
+| input-10.txt | 17x17 | 13 | 0.0003s | 0.0053s | 0.0019s | N/A |
+| input-11.txt | 10x10 | 19 | 0.0014s | 0.0165s | 0.0062s | N/A |
+| input-19.txt | 15x15 | 29 | 0.0016s | 0.047s | 0.0086s | N/A |
+| input-20.txt | 20x20 | 42 | 0.0037s | 0.1631s | 0.0212s | N/A |
+| input-24.txt | 25x25 | 60 | 0.0046s | 0.6331s | 0.0572s | N/A |
 
 ### Khuyến Nghị Sử Dụng
 
 | Kích thước puzzle | Thuật toán nên dùng | Lý do |
 |-------------------|---------------------|-------|
 | ≤ 5x5 | PySAT, Backtracking hoặc A* | Tất cả đều nhanh |
-| 7x7 - 9x9 | PySAT (khuyên dùng) | Nhanh và ổn định nhất |
-| 11x11 - 13x13 | PySAT | Duy nhất giải nhanh |
+| 7x7 - 10x10 | PySAT (khuyên dùng) | Nhanh và ổn định nhất |
+| 11x11 - 15x15 | PySAT | Duy nhất giải nhanh |
 | ≥ 17x17 | PySAT | Duy nhất khả thi |
 
 **Lưu ý quan trọng**: 
 - Brute Force chỉ dùng cho puzzle ≤ 5x5 với ít đảo
-- Với input-03 (5x5, 9 đảo): Brute Force mất 0.4s và explore 46,159 nodes
+- Với input-03 (5x5, 9 đảo): Brute Force mất 0.261s và explore 46,159 nodes
 - PySAT có thể phát hiện UNSAT rất nhanh (< 0.001s)
 
 ## 🔧 Xử Lý Sự Cố
@@ -547,7 +827,3 @@ Kiểm tra ràng buộc sớm để loại bỏ nhánh không khả thi
 
 Đồ án môn học CSC14003 - Introduction to Artificial Intelligence
 University of Science - VNUHCM
-
----
-
-**Lưu ý**: Đây là đồ án học tập. Nghiêm cấm sao chép toàn bộ hoặc một phần mã nguồn để nộp bài cho các khóa học khác.
